@@ -1,5 +1,6 @@
 package com.techreturners;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +21,29 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("received: {}", input);
 
-		Task t1 = new Task("abc123", "Buy the milk", false);
-		Task t2 = new Task("abc456", "Buy the bread", false);
+		// TODO: Get this information from the database.
 		List<Task> tasks = new ArrayList<>();
-		tasks.add(t1);
-		tasks.add(t2);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager
+					.getConnection("jdbc:mysql://localhost/tasks?"
+							+ "user=someone&password=password");
+			Statement statement = connection.createStatement();
+
+			ResultSet resultSet = statement.executeQuery("SELECT * FROM task WHERE userId = '47801de2-98b0-4bce-a7ed-a'");
+
+
+			while (resultSet.next()) {
+				String taskId = resultSet.getString("taskId");
+				String description = resultSet.getString("description");
+				boolean completed = resultSet.getBoolean("completed");
+				LOG.info("Task: {} - {}", taskId, description);
+				tasks.add(new Task(taskId, description, completed));
+			}
+		}
+		catch (ClassNotFoundException | SQLException e) {
+			LOG.error(e.getMessage());
+		}
 
 		return ApiGatewayResponse.builder()
 				.setStatusCode(200)
