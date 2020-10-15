@@ -16,24 +16,26 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
+	private String DB_HOST = System.getenv("DB_HOST");
+	private String DB_NAME = System.getenv("DB_NAME");
+	private String DB_USER = System.getenv("DB_USER");
+	private String DB_PASSWORD = System.getenv("DB_PASSWORD");
+
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("received: {}", input);
 
 		String userId = (String) ((Map)input.get("queryStringParameters")).get("userId");
-		LOG.info("UserId: {}", userId);
 
 		List<Task> tasks = new ArrayList<>();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection = DriverManager
-					.getConnection("jdbc:mysql://localhost/tasks?"
-							+ "user=user&password=password");
+					.getConnection(String.format("jdbc:mysql://%s/%s?user=%s&password=%s", DB_HOST, DB_NAME, DB_USER, DB_PASSWORD));
 
 			PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM task WHERE userId = ?");
 			preparedStatement.setString(1, userId);
 			ResultSet resultSet = preparedStatement.executeQuery();
-
 
 			while (resultSet.next()) {
 				String taskId = resultSet.getString("taskId");

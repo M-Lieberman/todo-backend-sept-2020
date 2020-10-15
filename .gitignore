@@ -12,3 +12,6 @@ target
 
 # Serverless directories
 .serverless
+
+src/main/resources/application.properties
+config.dev.json
