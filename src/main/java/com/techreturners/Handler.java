@@ -2,7 +2,6 @@ package com.techreturners;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -21,16 +20,19 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("received: {}", input);
 
-		// TODO: Get this information from the database.
+		String userId = (String) ((Map)input.get("queryStringParameters")).get("userId");
+		LOG.info("UserId: {}", userId);
+
 		List<Task> tasks = new ArrayList<>();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection = DriverManager
 					.getConnection("jdbc:mysql://localhost/tasks?"
-							+ "user=someone&password=password");
-			Statement statement = connection.createStatement();
+							+ "user=user&password=password");
 
-			ResultSet resultSet = statement.executeQuery("SELECT * FROM task WHERE userId = '47801de2-98b0-4bce-a7ed-a'");
+			PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM task WHERE userId = ?");
+			preparedStatement.setString(1, userId);
+			ResultSet resultSet = preparedStatement.executeQuery();
 
 
 			while (resultSet.next()) {
