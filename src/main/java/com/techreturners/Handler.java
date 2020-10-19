@@ -1,10 +1,12 @@
 package com.techreturners;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techreturners.model.Task;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,13 +36,43 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 			response = getTasks(userId);
 		}
 		else if(httpMethod.equalsIgnoreCase("POST")) {
-			LOG.info("RECEIVED a POST ");
+			String postBody = (String) input.get("body");
+			saveTask(postBody);
 		}
 
 		return ApiGatewayResponse.builder()
 				.setStatusCode(200)
 				.setObjectBody(response)
 				.build();
+	}
+
+	private void saveTask(String taskInfo) {
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = null;
+		try {
+			map = mapper.readValue(taskInfo, Map.class);
+			String taskDescription = (String) map.get("taskDescription");
+			boolean completed = (Boolean) map.get("completed");
+			String userId = (String) map.get("userId");
+			String taskId = "1234";
+
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager
+					.getConnection(String.format("jdbc:mysql://%s/%s?user=%s&password=%s", DB_HOST, DB_NAME, DB_USER, DB_PASSWORD));
+
+			PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO task VALUES (?, ?, ?, ?)");
+			preparedStatement.setString(1, taskId);
+			preparedStatement.setString(2, taskDescription);
+			preparedStatement.setBoolean(3, completed);
+			preparedStatement.setString(4, userId);
+			int rowsUpdated = preparedStatement.executeUpdate();
+
+			LOG.info("Rows updated {}", rowsUpdated);
+
+		}
+		catch (IOException | ClassNotFoundException | SQLException e) {
+			LOG.error(e.getMessage());
+		}
 	}
 
 	private List<Task> getTasks(String userId) {
