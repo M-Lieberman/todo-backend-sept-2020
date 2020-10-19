@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techreturners.model.Task;
@@ -54,7 +55,7 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 			String taskDescription = (String) map.get("taskDescription");
 			boolean completed = (Boolean) map.get("completed");
 			String userId = (String) map.get("userId");
-			String taskId = "1234";
+			String taskId = UUID.randomUUID().toString();
 
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection = DriverManager
