@@ -25,8 +25,25 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("received: {}", input);
 
-		String userId = (String) ((Map)input.get("queryStringParameters")).get("userId");
+		// Firstly work out whether we are handling a GET for tasks or a POST
+		String httpMethod = (String)input.get("httpMethod");
 
+		Object response = null;
+		if(httpMethod.equalsIgnoreCase("GET")) {
+			String userId = (String) ((Map)input.get("queryStringParameters")).get("userId");
+			response = getTasks(userId);
+		}
+		else if(httpMethod.equalsIgnoreCase("POST")) {
+			LOG.info("RECEIVED a POST ");
+		}
+
+		return ApiGatewayResponse.builder()
+				.setStatusCode(200)
+				.setObjectBody(response)
+				.build();
+	}
+
+	private List<Task> getTasks(String userId) {
 		List<Task> tasks = new ArrayList<>();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -41,7 +58,6 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 				String taskId = resultSet.getString("taskId");
 				String description = resultSet.getString("description");
 				boolean completed = resultSet.getBoolean("completed");
-				LOG.info("Task: {} - {}", taskId, description);
 				tasks.add(new Task(taskId, description, completed));
 			}
 		}
@@ -49,9 +65,6 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 			LOG.error(e.getMessage());
 		}
 
-		return ApiGatewayResponse.builder()
-				.setStatusCode(200)
-				.setObjectBody(tasks)
-				.build();
+		return tasks;
 	}
 }

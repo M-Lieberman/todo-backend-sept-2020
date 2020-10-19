@@ -22,3 +22,6 @@ functions:
       - http:
           path: tasks
           method: get
+      - http:
+          path: tasks
+          method: post
