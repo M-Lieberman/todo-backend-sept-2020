@@ -2,10 +2,7 @@ package com.techreturners;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techreturners.model.Task;
@@ -41,9 +38,15 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 			saveTask(postBody);
 		}
 
+		// CORS from anywhere
+		HashMap<String, String> headers = new HashMap<>();
+		headers.put("Access-Control-Allow-Origin", "*");
+		headers.put("Access-Control-Allow-Headers", "Content-Type");
+
 		return ApiGatewayResponse.builder()
 				.setStatusCode(200)
 				.setObjectBody(response)
+				.setHeaders(headers)
 				.build();
 	}
 
