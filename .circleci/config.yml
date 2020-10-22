@@ -6,6 +6,8 @@ orbs:
 
 jobs:
   notify-slack:
+    docker:
+      - image: 'cimg/base:stable'
     steps:
       - slack/notify:
           color: "#42e2f4"
