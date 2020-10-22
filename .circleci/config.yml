@@ -26,11 +26,12 @@ jobs:
               ]
             }
           event: always
-          channel: "tr_september_london_2020"
+          channel: "#tr_september_london_2020"
 
 workflows:
   maven_test:
     jobs:
       - maven/test
       - notify-slack
+          requires: maven/test
 
