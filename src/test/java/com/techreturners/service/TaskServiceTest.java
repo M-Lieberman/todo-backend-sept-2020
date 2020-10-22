@@ -60,4 +60,15 @@ public class TaskServiceTest {
         List<Task> tasks = taskService.getTasks("user1234");
         assertEquals("ABC1234", tasks.get(0).getTaskId());
     }
+
+    @Test
+    void testFetchTasksSuccessfullyReturnsEmptyListWhenNoData() throws Exception {
+        Mockito.when(DriverManager.getConnection(Mockito.anyString())).thenReturn(mockConnection);
+        Mockito.when(mockConnection.prepareStatement(Mockito.anyString())).thenReturn(mockPreparedStatement);
+        Mockito.when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        Mockito.when(mockResultSet.next()).thenReturn(false);
+
+        List<Task> tasks = taskService.getTasks("user1234");
+        assertEquals(0, tasks.size());
+    }
 }
