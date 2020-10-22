@@ -4,24 +4,16 @@ orbs:
   maven: circleci/maven@1.0.3
   slack: circleci/slack@4.0.2
 
+jobs:
+  notify-slack:
+    steps:
+      - slack/notify:
+          color: "#42e2f4"
+          message: "The build is passing!!"
+
 workflows:
   maven_test:
     jobs:
       - maven/test
-      - slack/notify:
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "plain_text",
-                      "text": "*The build is passing!!!!*",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-          event: always
+      - notify-slack
+
