@@ -69,6 +69,6 @@ public class TaskServiceTest {
         Mockito.when(mockResultSet.next()).thenReturn(false);
 
         List<Task> tasks = taskService.getTasks("user1234");
-        assertEquals(0, tasks.size());
+        assertEquals(1, tasks.size());
     }
 }
