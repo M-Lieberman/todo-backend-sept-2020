@@ -10,8 +10,23 @@ jobs:
       - image: 'cimg/base:stable'
     steps:
       - slack/notify:
-          color: "#42e2f4"
-          message: "The build is passing!!"
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "The build passed!! Finally got it working :raised_hands:",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
+          channel: "tr_september_london_2020"
 
 workflows:
   maven_test:
