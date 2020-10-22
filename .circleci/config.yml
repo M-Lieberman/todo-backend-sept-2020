@@ -2,8 +2,26 @@ version: 2.1
 
 orbs:
   maven: circleci/maven@1.0.3
+  slack: circleci/slack@4.0.2
 
 workflows:
   maven_test:
     jobs:
       - maven/test
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*The build is passing!!!!*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
