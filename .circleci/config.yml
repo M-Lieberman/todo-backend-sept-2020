@@ -32,6 +32,7 @@ workflows:
   maven_test:
     jobs:
       - maven/test
+          name: test
       - notify-slack
-          requires: maven/test
+          requires: test
 
