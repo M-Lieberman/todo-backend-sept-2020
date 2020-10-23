@@ -4,36 +4,8 @@ orbs:
   maven: circleci/maven@1.0.3
   slack: circleci/slack@4.0.2
 
-jobs:
-  notify-slack:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - slack/notify:
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "The build passed!! Finally got it working :raised_hands:",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-          event: always
-          channel: G0192BHASF8
-
 workflows:
   maven_test:
     jobs:
-      - maven/test:
-          name: test
-      - notify-slack:
-          requires:
-            - test
+      - maven/test
 
